@@ -127,17 +127,24 @@ namespace wow.tools.local.Controllers
                         var outputDir = Path.Combine(SettingsManager.ExtractionDir, CASC.BuildName, directoryName);
                         Directory.CreateDirectory(outputDir);
 
-                        var fileStream = CASC.GetFileByEKey(eKey.Keys[0], eKey.Size);
-                        if (fileStream == null)
+                        try
                         {
-                            Console.WriteLine($"Failed to extract {fileName} from install entries, file not found in CASC.");
-                            continue;
+                            var fileStream = CASC.GetFileByEKey(eKey.Keys[0], eKey.Size);
+                            if (fileStream == null)
+                            {
+                                Console.WriteLine($"Failed to extract {fileName} from install entries, file not found in CASC.");
+                                continue;
+                            }
+
+                            fileStream.CopyTo(ms);
+                            ms.Position = 0;
+
+                            System.IO.File.WriteAllBytes(Path.Combine(outputDir, Path.GetFileName(fileName)), ms.ToArray());
                         }
-
-                        fileStream.CopyTo(ms);
-                        ms.Position = 0;
-
-                        System.IO.File.WriteAllBytes(Path.Combine(outputDir, Path.GetFileName(fileName)), ms.ToArray());
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Failed to extract " + fileName + " from install entries: " + e.Message);
+                        }
                     }
                 }
             }

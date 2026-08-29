@@ -17,6 +17,7 @@
 - Updated TACT key metadata.
 - Updated files page length saving to not save table length if set to "All".
 - Fixed error in serverside setting form validation.
+- Fixed batch install file exporting breaking if one file fails to extract.
 - Fixed some flag tooltips assigning flags to the wrong value.
 - Fixed update/analyze buttons on files page resetting the table to the first page.
 - Fixed global DB2 search searching in tables not in the currently loaded build.
