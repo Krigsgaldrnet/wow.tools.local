@@ -1,4 +1,4 @@
-0.9.7 (xx-08-2026)
+0.9.7 (29-08-2026)
 - Added keyboard navigation in table paging inputs back (not sure when it disappeared).
 - Added locale to ZIP file downloaded when exporting all DB2s to CSV.
 - Added ability to update contenthashes from GitHub on the naming page.
