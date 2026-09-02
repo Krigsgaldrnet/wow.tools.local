@@ -5,7 +5,11 @@ namespace wow.tools.local.Services
     public static class Archavon
     {
         private static Dictionary<int, Dictionary<string, string>> CreatureCache = [];
+        private static Lock CreatureLock = new();
+
         private static Dictionary<int, Dictionary<string, string>> QuestCache = [];
+        private static Lock QuestLock = new();
+        
         private static HttpClient HttpClient = new HttpClient();
 
         static Archavon()
@@ -28,10 +32,13 @@ namespace wow.tools.local.Services
             var firstVersion = versions[0];
             foreach (var kvp in firstVersion.EnumerateObject())
             {
-                if (!CreatureCache.ContainsKey(creatureID))
+                lock(CreatureLock)
+                {
+                    if (!CreatureCache.ContainsKey(creatureID))
                     CreatureCache[creatureID] = new Dictionary<string, string>();
 
-                CreatureCache[creatureID][kvp.Name] = kvp.Value.ToString() ?? "";
+                    CreatureCache[creatureID][kvp.Name] = kvp.Value.ToString() ?? "";
+                }
             }
 
             return CreatureCache[creatureID];
@@ -52,10 +59,13 @@ namespace wow.tools.local.Services
             var firstVersion = versions[0];
             foreach (var kvp in firstVersion.EnumerateObject())
             {
-                if (!QuestCache.ContainsKey(questID))
-                    QuestCache[questID] = new Dictionary<string, string>();
+                lock(QuestLock)
+                {
+                    if (!QuestCache.ContainsKey(questID))
+                        QuestCache[questID] = new Dictionary<string, string>();
 
-                QuestCache[questID][kvp.Name] = kvp.Value.ToString() ?? "";
+                    QuestCache[questID][kvp.Name] = kvp.Value.ToString() ?? "";
+                }
             }
 
             return QuestCache[questID];

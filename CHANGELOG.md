@@ -1,3 +1,6 @@
+0.9.8 (xx-09-2026)
+- Fixed errors when requesting tooltips for certain quest/creatures.
+
 0.9.7 (29-08-2026)
 - Added keyboard navigation in table paging inputs back (not sure when it disappeared).
 - Added locale to ZIP file downloaded when exporting all DB2s to CSV.
