@@ -1,4 +1,5 @@
 0.9.8 (xx-09-2026)
+- Added Discord link to support-only channel.
 - Fixed errors when requesting tooltips for certain quest/creatures.
 
 0.9.7 (29-08-2026)
