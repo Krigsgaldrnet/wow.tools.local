@@ -894,6 +894,8 @@
             KeyInfo.Add(0x62BF37A70E6D54F6, (8225, "WOW-67227patch12.0.7_XPTR", "Unknown transmog set"));
             KeyInfo.Add(0x310B6F41B276961F, (8226, "WOW-68209patch12.1.0_PTR", "Unknown housing exterior component (6x)"));
             KeyInfo.Add(0xFC852D42866CE038, (8231, "WOW-67227patch12.0.7_XPTR", "Unknown toy"));
+            KeyInfo.Add(0x3D814BB73C938D86, (8232, "WOW-69594patch12.1.5_XPTR", "Unknown quests/VO"));
+            KeyInfo.Add(0x6FBFE64A2314C141, (8233, "WOW-69594patch12.1.5_XPTR", "Unknown in-game cutscene"));
             KeyInfo.Add(0xA250EC5C5E8C7B11, (8234, "WOW-68209patch12.1.0_PTR", "Unknown item set"));
             KeyInfo.Add(0x7D750600B7516941, (8235, "WOW-68209patch12.1.0_PTR", "Unknown item set"));
             KeyInfo.Add(0xE3E29771C59289DA, (8236, "WOW-68209patch12.1.0_PTR", "Unknown cape item"));
@@ -903,6 +905,7 @@
             KeyInfo.Add(0x570ED145F83E8B7B, (8243, "WOW-67525patch12.0.7_XPTR", "Spring armor"));
             KeyInfo.Add(0x8033CEF7FDE556C9, (8244, "WOW-67525patch12.0.7_XPTR", "BabyFaerieDragon2 battle pet"));
             KeyInfo.Add(0x9D96EBE2096AE3EE, (8246, "WOW-67525patch12.0.7_XPTR", "StormCrowMount_Ink mount"));
+            KeyInfo.Add(0x4663B3747FE45B3F, (8254, "WOW-69594patch12.1.5_XPTR", "Unknown cinematic"));
             KeyInfo.Add(0x698C227ECAE81223, (8255, "WOW-68317patch5.5.4_ClassicRetail", "Spring Panda mount"));
             KeyInfo.Add(0x9D6DF2962EC08AD0, (8256, "WOW-68317patch5.5.4_ClassicRetail", "BabyFaerieDragon (pink)"));
             KeyInfo.Add(0x6E42AB01FA720EA9, (8257, "WOW-68317patch5.5.4_ClassicRetail", "Sunflash Driftmoth (Classic)"));
@@ -947,6 +950,17 @@
             KeyInfo.Add(0x1E5C7237D1EA17C7, (8305, "WOW-68943patch3.80.2_ClassicTitan", "Unknown toy (CN)"));
             KeyInfo.Add(0xD3C81185FF9288C5, (8306, "WOW-69155patch5.5.4_ClassicRetail", "Visage of the Damned (CN)"));
             KeyInfo.Add(0x2B4AA57F9CD885F6, (8309, "WOW-69155patch5.5.4_ClassicRetail", "Tuskarr Hermit Crab (CN)"));
+            KeyInfo.Add(0x46BCA0B39E7864FF, (8322, "WOW-69594patch12.1.5_XPTR", "Tidesage housing exterior/room/decor"));
+            KeyInfo.Add(0xEB00B02AC6ADD077, (8323, "WOW-69594patch12.1.5_XPTR", "Unknown decor"));
+            KeyInfo.Add(0xB7457365877699FC, (8324, "WOW-69594patch12.1.5_XPTR", "Misha/Huffer creatures/(toy?)"));
+            KeyInfo.Add(0xD1A4D57C5E64F80B, (8325, "WOW-69594patch12.1.5_XPTR", ""));
+            KeyInfo.Add(0xBF5A860131BB05F2, (8326, "WOW-69594patch12.1.5_XPTR", "Unknown mount"));
+            KeyInfo.Add(0xE2C8A2697707F59C, (8327, "WOW-69594patch12.1.5_XPTR", "Unknown toy"));
+            KeyInfo.Add(0x05FA08A8F5F1FEA9, (8328, "WOW-69594patch12.1.5_XPTR", "Unknown quest/item set"));
+            KeyInfo.Add(0x979CF71A22917498, (8329, "WOW-69594patch12.1.5_XPTR", "Unknown battle pets (3x)"));
+            KeyInfo.Add(0xDAC5AA105D0C1B67, (8330, "WOW-69594patch12.1.5_XPTR", "Grrloc mount (oopsie)"));
+            KeyInfo.Add(0xF0155F33099659A3, (8331, "WOW-69594patch12.1.5_XPTR", "Unknown mount"));
+            KeyInfo.Add(0xA907FA61EBDEEADE, (8332, "WOW-69594patch12.1.5_XPTR", "Unknown decor"));
             // ID? FDC778C58B2FE080 Golden Ashened Cataclysm mount
         }
 
