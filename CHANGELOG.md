@@ -1,6 +1,7 @@
 0.9.8 (xx-09-2026)
 - Added Discord link to support-only channel.
 - Added state tracking to URL on build diff page (refreshes should now keep you in the same spot).
+- Added filter to DBC diffs to filter rows by diff type (Added/Modified/Removed).
 - Updated filter states to URL on DBC page.
 - Updated DBC browsing to work (closer) as expected when using backward/forwards browser navigation.
 - Updated TACT key metadata.

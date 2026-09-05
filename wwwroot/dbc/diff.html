@@ -54,6 +54,12 @@
         </form>
         <a style='display: none; vertical-align: top; margin-left: 10px;' id='toDBCButton' class='btn btn-secondary btn-sm' href='' target="_parent"><i class='fa fa-table'></i> Open DBC</a>
         <a style='display: none; vertical-align: top;' id='toCompareButton' class='btn btn-secondary btn-sm' href='' target="_parent"><i class='fa fa-columns'></i> Open to Compare</a>
+        <select id="opFilter" class="form-select form-select-sm" style="display: none">
+            <option value="Unknown" SELECTED>Show All Changes</option>
+            <option value="Added">Added</option>
+            <option value="Replaced">Modified</option>
+            <option value="Removed">Removed</option>
+        </select>
         <div id='tableContainer'></div>
     </div>
     <div class="modal" id="fkModal" tabindex="-1" role="dialog" aria-labelledby="fkModalLabel" aria-hidden="true">
@@ -247,7 +253,10 @@
                         "serverSide": true,
                         "ajax": {
                             url: dataURL,
-                            type: "POST"
+                            type: "POST",
+                            data: function (ajaxData) {
+                                ajaxData.opFilter = document.getElementById("opFilter").value;
+                            }
                         },
                         "columnDefs": [{
                             "targets": "_all",
@@ -396,8 +405,31 @@
                             },
                     });
 
+                    diffTable.one("preDraw.dt", function () {
+                        const lengthMenu = document.querySelector("#dbtable_wrapper .dt-length");
+
+                        // make a holder so we can have it next to the length menu but not inside of it because datatables rerenders it each draw?
+                        let opFilterHolder = document.getElementById("opFilterHolder");
+                        if (!opFilterHolder) {
+                            opFilterHolder = document.createElement("div");
+                            opFilterHolder.id = "opFilterHolder";
+                            opFilterHolder.style.marginLeft = "10px";
+                        }
+
+                        lengthMenu.insertAdjacentElement("afterend", opFilterHolder);
+
+                        let opFilter = document.getElementById("opFilter");
+                        opFilter.style.display = "inline-block";
+                        opFilterHolder.appendChild(opFilter);
+                    });
+
                     diffTable.on('length.dt', function (e, settings, len) {
                         localStorage.setItem("settings[dbcDiffPageLength]", len);
+                    });
+
+                    const opFilter = document.getElementById("opFilter");
+                    opFilter.addEventListener('change', function () {
+                        diffTable.ajax.reload();
                     });
                 });
             }
