@@ -6,6 +6,7 @@
 - Updated DBC browsing to work (closer) as expected when using backward/forwards browser navigation.
 - Updated TACT key metadata.
 - Updated text preview types to include WTF files.
+- Updated deep map file naming to only run on maps newer than Khaz Algar.
 - Fixed issue with some files not being named with placeholders.
 - Fixed double draws on DBC page (should speed up DB2 browsing a good bit!).
 - Fixed CTRL-A not selecting anything inside DBC filter inputs. 
