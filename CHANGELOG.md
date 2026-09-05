@@ -6,6 +6,7 @@
 - Updated DBC browsing to work (closer) as expected when using backward/forwards browser navigation.
 - Updated TACT key metadata.
 - Updated text preview types to include WTF files.
+- Fixed issue with some files not being named with placeholders.
 - Fixed double draws on DBC page (should speed up DB2 browsing a good bit!).
 - Fixed CTRL-A not selecting anything inside DBC filter inputs. 
 - Fixed minimaps not always including unreferenced but named tiles.
