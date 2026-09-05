@@ -1,7 +1,12 @@
 0.9.8 (xx-09-2026)
 - Added Discord link to support-only channel.
+- Added state tracking to URL on build diff page (refreshes should now keep you in the same spot).
+- Updated filter states to URL on DBC page.
+- Updated DBC browsing to work (closer) as expected when using backward/forwards browser navigation.
 - Updated TACT key metadata.
 - Updated text preview types to include WTF files.
+- Fixed double draws on DBC page (should speed up DB2 browsing a good bit!).
+- Fixed CTRL-A not selecting anything inside DBC filter inputs. 
 - Fixed minimaps not always including unreferenced but named tiles.
 - Fixed errors when requesting tooltips for certain quest/creatures.
 

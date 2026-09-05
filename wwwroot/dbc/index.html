@@ -351,7 +351,6 @@
         }
 
         function updateDBDButton() {
-            console.log("updating button");
             const dbdButton = document.getElementById("dbdButton");
             if (dbdButton) {
                 if (Settings.showDBDButton) {
@@ -518,6 +517,7 @@
 
                 var headerRow = document.querySelector("#tableContainer thead tr");
                 var clonedRow = headerRow.cloneNode(true);
+                clonedRow.classList.add("filters");
                 document.querySelector("#tableContainer thead").appendChild(clonedRow);
 
                 var filterHeaders = document.querySelectorAll("#tableContainer thead tr:nth-child(2) th");
@@ -549,6 +549,14 @@
                         input.addEventListener('click', function (e) {
                             e.stopPropagation();
                         });
+
+                        input.addEventListener('keydown', function (e) {
+                            // manual hack -- something somewhere is breaking ctrl-a 
+                            if (e.ctrlKey && e.key.toLowerCase() === 'a') {
+                                this.select();
+                                e.preventDefault();
+                            }
+                        });
                     }
                 });
 
@@ -574,12 +582,13 @@
                     secondRow.remove();
                 }
 
-                Settings.filtersCurrentlyEnabled = false;
-            }
+                // redraw the table in case anything was filtered
+                var dbTable = document.getElementById('dbtable');
+                if (dbTable && DataTable.isDataTable(dbTable)) {
+                    DataTable('#dbtable').draw('page');
+                }
 
-            var dbTable = document.getElementById('dbtable');
-            if (dbTable && DataTable.isDataTable(dbTable)) {
-                DataTable('#dbtable').draw('page');
+                Settings.filtersCurrentlyEnabled = false;
             }
         }
 
@@ -604,6 +613,8 @@
 
             return url;
         }
+
+        let fileChoices;
 
         function refreshFiles() {
             console.log("Refreshing files");
@@ -632,7 +643,7 @@
                         fileFilter.appendChild(option);
                     });
 
-                    const choices = new Choices(document.getElementById("fileFilter"), {
+                    fileChoices = new Choices(document.getElementById("fileFilter"), {
                         searchEnabled: true,
                         searchChoices: true,
                         searchFields: ['label', 'value'],
@@ -641,7 +652,7 @@
                         itemSelectText: '',
                     });
 
-                    choices.enable();
+                    fileChoices.enable();
 
                     updateDBDButton();
                 }).catch(function (error) {
@@ -1263,37 +1274,55 @@
                         console.log('An error occurred: ', message);
                     });
 
-                    table.on('init.dt', function () {
+                    table.one('preDraw.dt', function () {
                         if (Settings.filtersAlwaysEnabled) {
                             toggleFilters();
-                        }
-                        if (colSearchSet && !Settings.filtersAlwaysEnabled && !Settings.filtersCurrentlyEnabled) {
+                        } else if (colSearchSet && !Settings.filtersAlwaysEnabled && !Settings.filtersCurrentlyEnabled) {
                             toggleFilters();
                         }
                     });
 
                     table.on('draw.dt', function () {
-                        let currentPage = table.page() + 1;
-                        let hashPart = "page=" + currentPage;
+                        const hashParams = [];
 
-                        var searchInput = document.getElementById("dt-search-0");
+                        const searchInput = document.getElementById("dt-search-0");
                         const currentSearch = searchInput ? encodeURIComponent(searchInput.value) : "";
-                        if (currentSearch != "" && currentSearch != undefined && currentSearch != "undefined") {
-                            hashPart += "&search=" + currentSearch;
+                        if (currentSearch != "" && currentSearch != undefined && currentSearch != "undefined")
+                            hashParams.push("search=" + currentSearch);
+
+                        const currentPage = table.page() + 1;
+                        hashParams.push("page=" + currentPage);
+
+                        const sort = table.order();
+                        if (sort.length > 0) {
+                            if (sort[0][0] != 0)
+                                hashParams.push("sort=" + sort[0][0]);
+
+                            let sortDir = sort[0][1];
+                            if (sortDir == "" || sortDir == null)
+                                sortDir = "asc";
+
+                            if (sortDir != "asc")
+                                hashParams.push("desc=" + sortDir);
                         }
 
-                        const columnSearches = table.columns().search();
-                        for (let i = 0; i < columnSearches.length; i++) {
-                            var colSearch = columnSearches[i];
+                        const filterHeaders = document.querySelectorAll('#dbtable thead tr.filters th');
+                        filterHeaders.forEach(function (element, index) {
+                            const input = element.querySelector("input");
+                            if (input && input.value) {
+                                hashParams.push("colFilter[" + index + "]=" + encodeURIComponent(input.value));
+                            }
 
-                            if (colSearch == "")
-                                continue;
+                        });
 
-                            hashPart += "&colFilter[" + i + "]=" + encodeURIComponent(colSearch);
+                        // the below is so the back button keeps working because browser back/forward shouldn't re-push states
+                        if (!window.isPopState) {
+                            window.history.pushState('dbc', document.title, buildURL(currentParams) + "#" + hashParams.join("&"));
+                        } else {
+                            window.isPopState = false;
                         }
 
-                        window.history.pushState('dbc', document.title, buildURL(currentParams) + "#" + hashPart);
-                        window.location.hash = hashPart;
+                        window.location.hash = hashParams.join("&");
                     });
 
                     table.on('length.dt', function (e, settings, len) {
@@ -1302,10 +1331,106 @@
                 });
         }
 
+        function locationHashChanged(event) {
+            table = new DataTable.Api('#dbtable');
+            
+            if (!table) {
+                return;
+            }
+
+            var searchHash = location.hash.substr(1),
+                searchString = searchHash.substr(searchHash.indexOf('search=')).split('&')[0].split('=')[1];
+
+            if (searchString != undefined && searchString.length > 0) {
+                searchString = decodeURIComponent(searchString);
+            }
+
+            var searchInput = document.getElementById("dt-search-0");
+            if (searchString != undefined && searchInput && searchInput.value != searchString) {
+                table.search(searchString).draw(false);
+            }
+            var page = (parseInt(searchHash.substr(searchHash.indexOf('page=')).split('&')[0].split('=')[1], 10) || 1) - 1;
+            if (table.page() != page) {
+                table.page(page).draw(false);
+            }
+
+            var sortCol = searchHash.substr(searchHash.indexOf('sort=')).split('&')[0].split('=')[1];
+            if (!sortCol) {
+                sortCol = 0;
+            }
+
+            var sortDesc = searchHash.substr(searchHash.indexOf('desc=')).split('&')[0].split('=')[1];
+            if (!sortDesc) {
+                sortDesc = "asc";
+            }
+
+            var curSort = table.order();
+            if (curSort.length > 0) {
+                if (sortCol != curSort[0][0] || sortDesc != curSort[0][1]) {
+                    table.order([sortCol, sortDesc]).draw(false);
+                }
+            }
+
+            var filterHeaders = document.querySelectorAll('#dbtable thead tr.filters th');
+            filterHeaders.forEach(function (element, index) {
+                var input = element.querySelector("input");
+
+                var colFilterHash = searchHash.substr(searchHash.indexOf('colFilter[' + index + ']=')).split('&')[0].split('=')[1];
+                if (colFilterHash != undefined) {
+                    var colFilterValue = decodeURIComponent(colFilterHash);
+                    if (input && input.value != colFilterValue) {
+                        input.value = colFilterValue;
+                        table.column(index).search(colFilterValue).draw(false);
+                    }
+                } else {
+                    if (input && input.value != "") {
+                        input.value = "";
+                        table.column(index).search("").draw(false);
+                    }
+                }
+            });
+        }
+
+        window.isPopState = false;
+        function popStateChanged(event) {
+            window.isPopState = true;
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('dbc') && currentParams["dbc"] != urlParams.get('dbc')) {
+
+                // this is a bit ass because the casing differs
+                const fileFilter = document.getElementById("fileFilter");
+                for (let i = 0; i < fileFilter.options.length; i++) {
+                    if (fileFilter.options[i].value.toLowerCase() == urlParams.get('dbc').toLowerCase()) {
+                        fileChoices.setChoiceByValue(fileFilter.options[i].value);
+                        break;
+                    }
+                }
+
+                loadURLParams();
+                loadTable();
+            }
+
+            if (urlParams.has('build') && currentParams["build"] != urlParams.get('build')) {
+                const buildFilter = document.getElementById("buildFilter");
+                buildFilter.value = urlParams.get('build');
+                buildFilter.dispatchEvent(new Event('change'));
+            }
+
+            if (urlParams.has('locale') && currentParams["locale"] != urlParams.get('locale')) {
+                const localeSelection = document.getElementById("localeSelection");
+                localeSelection.value = urlParams.get('locale');
+                localeSelection.dispatchEvent(new Event('change'));
+            }
+        }
+
+        window.onpopstate = popStateChanged;
+        window.onhashchange = locationHashChanged;
+
         let build;
         let currentParams = [];
 
-        (async function () {
+        async function loadURLParams() {
             let vars = {};
             let parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
                 if (value.includes('#')) {
@@ -1361,46 +1486,13 @@
                 Settings.useHotfixes = false;
                 document.getElementById('hotfixToggle').checked = false;
             }
+        }
 
+        (async function () {
+            await loadURLParams();
             refreshFiles();
             refreshVersions();
             loadTable();
-
-            document.getElementById('fileFilter').addEventListener('change', function () {
-                if (this.value != "" && this.value != "Select a table") {
-                    currentParams["dbc"] = this.value.toLowerCase();
-                    if (document.getElementById("buildFilter")) {
-                        clearState = true;
-                        setPageDB2Title(this.value);
-                        refreshVersions();
-                        loadTable();
-                        updateDBDButton();
-                    } else {
-                        document.location = buildURL(currentParams);
-                    }
-                }
-            });
-
-            document.getElementById('buildFilter').addEventListener('change', function () {
-                currentParams["build"] = document.getElementById('buildFilter').value;
-                loadTable();
-            });
-
-            document.getElementById('localeSelection').addEventListener('change', function () {
-                currentParams["locale"] = document.getElementById('localeSelection').value;
-                loadTable();
-            });
-
-            document.getElementById('hotfixToggle').addEventListener('change', function () {
-                if (document.getElementById('hotfixToggle').checked) {
-                    currentParams["hotfixes"] = true;
-                } else {
-                    currentParams["hotfixes"] = false;
-                }
-                loadTable();
-            });
-
-            console.log("Refreshing files");
 
             /* FK search */
             var fkSearchDB = document.getElementById('fkSearchDB');
@@ -1432,12 +1524,49 @@
                 }).catch(function (error) {
                     console.log("An error occurred retrieving files: " + error);
                 });
+
             var foreignKeyModal = document.getElementById('foreignKeySearchModal');
             foreignKeyModal.addEventListener('hidden.bs.modal', function () {
                 document.getElementById("foreignKeySearchForm").style.display = 'flex';
                 document.getElementById("fkSearchResultHolder").innerHTML = "";
             })
         }());
+
+        document.getElementById('fileFilter').addEventListener('change', function () {
+            if (this.value != "" && this.value != "Select a table") {
+                currentParams["dbc"] = this.value.toLowerCase();
+                if (document.getElementById("buildFilter")) {
+                    clearState = true;
+                    setPageDB2Title(this.value);
+                    refreshVersions();
+                    loadTable();
+                    updateDBDButton();
+                } else {
+                    document.location = buildURL(currentParams);
+                }
+            }
+        });
+
+        document.getElementById('buildFilter').addEventListener('change', function () {
+            currentParams["build"] = document.getElementById('buildFilter').value;
+            loadTable();
+        });
+
+        document.getElementById('localeSelection').addEventListener('change', function () {
+            currentParams["locale"] = document.getElementById('localeSelection').value;
+            loadTable();
+        });
+
+        document.getElementById('hotfixToggle').addEventListener('change', function () {
+            if (document.getElementById('hotfixToggle').checked) {
+                currentParams["hotfixes"] = true;
+            } else {
+                currentParams["hotfixes"] = false;
+            }
+            loadTable();
+        });
+
+        loadURLParams();
     </script>
 </body>
 </html>
