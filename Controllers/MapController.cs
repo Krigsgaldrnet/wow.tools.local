@@ -137,11 +137,11 @@ namespace wow.tools.local.Controllers
             Dictionary<string, int> allFiles;
 
             if (layer == 0)
-                allFiles = Listfile.NameMap.Where(x => x.Value.StartsWith("world/minimaps/" + directory.ToLower(), StringComparison.CurrentCultureIgnoreCase)).ToDictionary(x => x.Value, x => x.Key);
+                allFiles = Listfile.NameMap.Where(x => x.Value.StartsWith("world/minimaps/" + directory.ToLower(), StringComparison.OrdinalIgnoreCase)).ToDictionary(x => x.Value.ToLowerInvariant(), x => x.Key);
             else if (layer == 1)
-                allFiles = Listfile.NameMap.Where(x => x.Value.StartsWith("world/maptextures/" + directory.ToLower(), StringComparison.CurrentCultureIgnoreCase) && !x.Value.EndsWith("_n.blp", StringComparison.CurrentCultureIgnoreCase)).ToDictionary(x => x.Value, x => x.Key);
+                allFiles = Listfile.NameMap.Where(x => x.Value.StartsWith("world/maptextures/" + directory.ToLower(), StringComparison.OrdinalIgnoreCase) && !x.Value.EndsWith("_n.blp", StringComparison.OrdinalIgnoreCase)).ToDictionary(x => x.Value.ToLowerInvariant(), x => x.Key);
             else if (layer == 2)
-                allFiles = Listfile.NameMap.Where(x => x.Value.StartsWith("world/maptextures/" + directory.ToLower(), StringComparison.CurrentCultureIgnoreCase) && x.Value.EndsWith("_n.blp", StringComparison.CurrentCultureIgnoreCase)).ToDictionary(x => x.Value, x => x.Key);
+                allFiles = Listfile.NameMap.Where(x => x.Value.StartsWith("world/maptextures/" + directory.ToLower(), StringComparison.OrdinalIgnoreCase) && x.Value.EndsWith("_n.blp", StringComparison.OrdinalIgnoreCase)).ToDictionary(x => x.Value.ToLowerInvariant(), x => x.Key);
             else
                 throw new Exception("Unknown layer type");
 
