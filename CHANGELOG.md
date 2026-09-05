@@ -1,6 +1,7 @@
 0.9.8 (xx-09-2026)
 - Added Discord link to support-only channel.
 - Updated TACT key metadata.
+- Updated text preview types to include WTF files.
 - Fixed minimaps not always including unreferenced but named tiles.
 - Fixed errors when requesting tooltips for certain quest/creatures.
 

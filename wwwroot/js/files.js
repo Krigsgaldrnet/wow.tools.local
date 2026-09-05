@@ -167,7 +167,7 @@ function fillPreviewModal(filedataid, type) {
     var url = "/casc/fdid?fileDataID=" + filedataid + "&filename=preview";
 
     // Preview tab: visual preview of files, e.g. modelviewer, audio player, textures, code, text, etc
-    var previewTabExts = ["blp", "mp3", "ogg", "m2", "wmo", "m3", "lua", "html", "txt", "srt", "xml", "toc", "hlsl", "png"];
+    var previewTabExts = ["blp", "mp3", "ogg", "m2", "wmo", "m3", "lua", "html", "txt", "srt", "xml", "toc", "hlsl", "png", "wtf"];
     var hasPreviewTab = previewTabExts.includes(type); 
 
     // JSON preview of file, for files where this is relevant (e.g. models, wmos, adts, bls, gfats, etc)
@@ -242,7 +242,7 @@ function fillPreviewModal(filedataid, type) {
                 html += "<iframe style=\"border:0px;width:100%;min-height: 75vh\" src=\"/mv/m3.html?embed=true&filedataid=" + filedataid + "&type=" + type + "\"></iframe>";
                 html += "<div class='modal-mvlink' style='text-align:right;'><a href='/mv/m3.html?filedataid=" + filedataid + "' target='_blank'>Open in modelviewer</a></div>";
             }
-        } else if (type == "lua" || type == "txt" || type == "srt" || type == "toc" || type == "hlsl") {
+        } else if (type == "lua" || type == "txt" || type == "srt" || type == "toc" || type == "hlsl" || type == "wtf") {
             html += "<pre style='max-height: 80vh'><code id='codeHolder'></code></pre>";
             fetch(url).then((response) => response.text()).then((text) => {
                 document.getElementById('codeHolder').innerHTML = text;
